@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "platformio.platformio-ide",
+        "ms-vscode.vscode-serial-monitor",
+        "jeff-hykin.better-cpp-syntax",
+        "IBM.output-colorizer",
+        "hediet.vscode-drawio",
+        "ms-vscode.cpptools-extension-pack",
+        "gruntfuggly.todo-tree",
+        "eamodio.gitlens",
+        "redhat.vscode-yaml",
+        "yzhang.markdown-all-in-one"
+    ],
+    "unwantedRecommendations": []
+}

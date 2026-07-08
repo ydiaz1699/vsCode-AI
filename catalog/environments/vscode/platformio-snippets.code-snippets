@@ -1,0 +1,80 @@
+{
+    "PlatformIO Environment Section": {
+        "prefix": "pioenv",
+        "scope": "ini",
+        "body": [
+            "[env:${1:myenv}]",
+            "platform = ${2:espressif32}",
+            "board = ${3:esp32dev}",
+            "framework = ${4:arduino}",
+            "monitor_speed = ${5:115200}",
+            "lib_deps =",
+            "\t${6:}",
+            ""
+        ],
+        "description": "PlatformIO environment section template"
+    },
+    "PlatformIO Build Flags": {
+        "prefix": "piobf",
+        "scope": "ini",
+        "body": [
+            "build_flags =",
+            "\t-D ${1:FLAG_NAME}=${2:value}",
+            "\t-D ${3:ANOTHER_FLAG}=${4:value}",
+            "\t-Wall",
+            "\t-Wextra",
+            ""
+        ],
+        "description": "PlatformIO build flags configuration"
+    },
+    "PlatformIO Library Dependencies": {
+        "prefix": "piolib",
+        "scope": "ini",
+        "body": [
+            "lib_deps =",
+            "\t${1:owner}/${2:library}@^${3:1.0.0}",
+            "\t${4:owner}/${5:library}@^${6:1.0.0}",
+            ""
+        ],
+        "description": "PlatformIO library dependencies configuration"
+    },
+    "PlatformIO Debug Environment": {
+        "prefix": "piodbg",
+        "scope": "ini",
+        "body": [
+            "[env:${1:debug}]",
+            "platform = ${2:espressif32}",
+            "board = ${3:esp32dev}",
+            "framework = ${4:arduino}",
+            "build_type = debug",
+            "debug_tool = ${5:esp-prog}",
+            "debug_init_break = tbreak setup",
+            "monitor_speed = 115200",
+            "build_flags =",
+            "\t-DCORE_DEBUG_LEVEL=5",
+            "\t-DLOG_LOCAL_LEVEL=ESP_LOG_VERBOSE",
+            ""
+        ],
+        "description": "PlatformIO debug environment template"
+    },
+    "PlatformIO OTA Environment": {
+        "prefix": "pioota",
+        "scope": "ini",
+        "body": [
+            "[env:${1:ota}]",
+            "platform = ${2:espressif32}",
+            "board = ${3:esp32dev}",
+            "framework = ${4:arduino}",
+            "upload_protocol = espota",
+            "upload_port = ${5:192.168.1.100}",
+            "upload_flags =",
+            "\t--port=${6:3232}",
+            "\t--auth=${7:password}",
+            "monitor_speed = 115200",
+            "build_flags =",
+            "\t-DOTA_ENABLED=1",
+            ""
+        ],
+        "description": "PlatformIO OTA upload environment template"
+    }
+}

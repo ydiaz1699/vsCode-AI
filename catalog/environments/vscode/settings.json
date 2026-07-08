@@ -1,0 +1,86 @@
+{
+    "todo-tree.general.tags": [
+        "TODO",
+        "FIXME",
+        "HACK",
+        "BUG",
+        "XXX",
+        "NOTE",
+        "WARN",
+        "REVIEW"
+    ],
+    "todo-tree.highlights.customHighlight": {
+        "TODO": {
+            "icon": "checklist",
+            "iconColour": "#FF8C00",
+            "background": "#FF8C0020",
+            "type": "tag"
+        },
+        "FIXME": {
+            "icon": "flame",
+            "iconColour": "#FF0000",
+            "background": "#FF000020",
+            "type": "tag"
+        },
+        "HACK": {
+            "icon": "tools",
+            "iconColour": "#FF00FF",
+            "background": "#FF00FF20",
+            "type": "tag"
+        },
+        "BUG": {
+            "icon": "bug",
+            "iconColour": "#DC143C",
+            "background": "#DC143C20",
+            "type": "tag"
+        },
+        "XXX": {
+            "icon": "alert",
+            "iconColour": "#FFA500",
+            "background": "#FFA50020",
+            "type": "tag"
+        },
+        "NOTE": {
+            "icon": "note",
+            "iconColour": "#1E90FF",
+            "background": "#1E90FF20",
+            "type": "tag"
+        },
+        "WARN": {
+            "icon": "warning",
+            "iconColour": "#FFD700",
+            "background": "#FFD70020",
+            "type": "tag"
+        },
+        "REVIEW": {
+            "icon": "eye",
+            "iconColour": "#9370DB",
+            "background": "#9370DB20",
+            "type": "tag"
+        }
+    },
+    "todo-tree.filtering.includeGlobs": [
+        "**/*.cpp",
+        "**/*.h",
+        "**/*.hpp",
+        "**/*.c",
+        "**/*.ino",
+        "**/*.py",
+        "**/*.md",
+        "**/*.yaml",
+        "**/*.yml"
+    ],
+    "C_Cpp.intelliSenseCacheSize": 512,
+    "C_Cpp.errorSquiggles": "enabled",
+    "C_Cpp.formatting": "vcFormat",
+    "vscode-serial-monitor.baudRate": 115200,
+    "vscode-serial-monitor.lineEnding": "LF",
+    "vscode-serial-monitor.timestamp": true,
+    "editor.formatOnSave": true,
+    "files.associations": {
+        "*.ino": "cpp",
+        "platformio.ini": "ini"
+    },
+    "platformio-ide.useBuiltinPython": true,
+    "platformio-ide.autoSaveOnBuild": true
+}
