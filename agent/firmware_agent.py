@@ -16,7 +16,7 @@ Uso:
     # Con query directa
     python -m agent.firmware_agent "Crea un sensor IoT con ESP32 y DHT22"
 
-    # Con modelo alternativo (Anthropic directo, OpenAI, Ollama)
+    # Con modelo alternativo
     STRANDS_MODEL=anthropic python -m agent.firmware_agent "..."
     STRANDS_MODEL=openai python -m agent.firmware_agent "..."
     STRANDS_MODEL=ollama python -m agent.firmware_agent "..."
@@ -34,13 +34,15 @@ from strands import Agent
 
 from agent.tools import ALL_TOOLS
 
+
 # ─────────────────────────────────────────────────────────────────────────────
-# Configuración de paths
+# Configuración de rutas
 # ─────────────────────────────────────────────────────────────────────────────
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROMPTS_DIR = BASE_DIR / "prompts"
 SYSTEM_PROMPT_FILE = PROMPTS_DIR / "synapse-v3.md"
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Cargar System Prompt
@@ -61,8 +63,8 @@ def load_system_prompt() -> str:
 
     synapse_prompt = SYSTEM_PROMPT_FILE.read_text(encoding="utf-8")
 
-    # Preámbulo con instrucciones para el uso de tools
-    tools_preamble = """
+    # Preámbulo con instrucciones para el uso de herramientas
+    preambulo = """
 # HERRAMIENTAS DISPONIBLES
 
 Tienes acceso a las siguientes herramientas para cumplir los objetivos del usuario.
@@ -98,7 +100,8 @@ DEBES usarlas activamente — no inventes datos de hardware ni estructuras de ar
 ---
 
 """
-    return tools_preamble + synapse_prompt
+    return preambulo + synapse_prompt
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -109,23 +112,22 @@ DEBES usarlas activamente — no inventes datos de hardware ni estructuras de ar
 def get_model():
     """Selecciona el modelo según la variable de entorno STRANDS_MODEL.
 
-    Valores soportados:
-        - bedrock (default): Amazon Bedrock con Claude Sonnet
+    Proveedores soportados:
+        - bedrock (default): Amazon Bedrock con Claude Sonnet 4
         - anthropic: API de Anthropic directa
         - openai: API de OpenAI (GPT-4o)
         - ollama: Modelo local via Ollama
 
     Variables de entorno adicionales:
         - STRANDS_MODEL_ID: Override del model_id específico
-        - ANTHROPIC_API_KEY: Para modelo anthropic
-        - OPENAI_API_KEY: Para modelo openai
+        - ANTHROPIC_API_KEY: Para proveedor anthropic
+        - OPENAI_API_KEY: Para proveedor openai
         - OLLAMA_HOST: Host de Ollama (default: http://localhost:11434)
     """
-    provider = os.environ.get("STRANDS_MODEL", "bedrock").lower()
+    proveedor = os.environ.get("STRANDS_MODEL", "bedrock").lower()
     model_id_override = os.environ.get("STRANDS_MODEL_ID")
 
-    if provider == "bedrock":
-        # Default: Amazon Bedrock con Claude Sonnet 4
+    if proveedor == "bedrock":
         from strands.models.bedrock import BedrockModel
         model_id = model_id_override or "us.anthropic.claude-sonnet-4-20250514-v1:0"
         return BedrockModel(
@@ -133,17 +135,17 @@ def get_model():
             region_name=os.environ.get("AWS_REGION", "us-east-1"),
         )
 
-    elif provider == "anthropic":
+    elif proveedor == "anthropic":
         from strands.models.anthropic import AnthropicModel
         model_id = model_id_override or "claude-sonnet-4-20250514"
         return AnthropicModel(model_id=model_id)
 
-    elif provider == "openai":
+    elif proveedor == "openai":
         from strands.models.openai import OpenAIModel
         model_id = model_id_override or "gpt-4o"
         return OpenAIModel(model_id=model_id)
 
-    elif provider == "ollama":
+    elif proveedor == "ollama":
         from strands.models.ollama import OllamaModel
         model_id = model_id_override or "llama3.1"
         host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
@@ -151,10 +153,11 @@ def get_model():
 
     else:
         raise ValueError(
-            f"Modelo '{provider}' no soportado.\n"
+            f"Proveedor '{proveedor}' no soportado.\n"
             f"Opciones: bedrock, anthropic, openai, ollama\n"
             f"Configura con: export STRANDS_MODEL=<opción>"
         )
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -163,7 +166,7 @@ def get_model():
 
 
 def create_firmware_agent() -> Agent:
-    """Crea y retorna el agente firmware configurado con tools y system prompt."""
+    """Crea y retorna el agente firmware con tools y system prompt."""
     system_prompt = load_system_prompt()
     model = get_model()
 

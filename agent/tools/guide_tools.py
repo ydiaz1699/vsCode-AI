@@ -1,5 +1,5 @@
 """
-Tools para leer las guías de generación.
+Herramientas para leer las guías de generación.
 
 Las guías viven en guides/gen-*.md y definen CÓMO crear cada archivo
 del proyecto (estructura, reglas, formato esperado).
@@ -8,7 +8,7 @@ del proyecto (estructura, reglas, formato esperado).
 from pathlib import Path
 from strands.tools import tool
 
-# Base del proyecto (raíz de vsCode-AI)
+# Raíz del proyecto vsCode-AI
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
@@ -35,10 +35,10 @@ def read_guide(guide_name: str) -> str:
     guide_file = guides_dir / f"{guide_name}.md"
 
     if not guide_file.exists():
-        available = sorted(f.stem for f in guides_dir.glob("gen-*.md"))
+        disponibles = sorted(f.stem for f in guides_dir.glob("gen-*.md"))
         return (
             f"ERROR: Guía '{guide_name}' no encontrada.\n"
-            f"Guías disponibles: {', '.join(available)}\n"
+            f"Guías disponibles: {', '.join(disponibles)}\n"
             f"Usa uno de estos nombres exactos (sin .md)."
         )
 
@@ -64,11 +64,10 @@ def list_guides() -> str:
         return "ERROR: No se encontraron guías en guides/"
 
     # Extraer la primera línea significativa como descripción
-    guide_entries = []
+    entradas = []
     for g in guides:
         try:
             lines = g.read_text(encoding="utf-8").strip().splitlines()
-            # Buscar la primera línea que no sea título ni vacía
             desc = ""
             for line in lines:
                 stripped = line.strip()
@@ -76,18 +75,17 @@ def list_guides() -> str:
                     desc = stripped[:80]
                     break
             if not desc:
-                # Usar el título H1 si no hay otra línea
                 for line in lines:
                     if line.startswith("# "):
                         desc = line[2:].strip()
                         break
-            guide_entries.append(f"  - {g.stem}: {desc}")
+            entradas.append(f"  - {g.stem}: {desc}")
         except Exception:
-            guide_entries.append(f"  - {g.stem}: (error al leer)")
+            entradas.append(f"  - {g.stem}: (error al leer)")
 
     return (
-        f"=== GUÍAS DE GENERACIÓN ({len(guide_entries)}) ===\n\n"
-        + "\n".join(guide_entries)
+        f"=== GUÍAS DE GENERACIÓN ({len(entradas)}) ===\n\n"
+        + "\n".join(entradas)
         + "\n\n"
         f"Usa read_guide(nombre) para ver el contenido completo de una guía."
     )

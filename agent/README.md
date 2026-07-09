@@ -1,6 +1,8 @@
-# vsCode-AI Strands Agent
+# vsCode-AI — Agente Strands (Nivel 1)
 
-Agente inteligente basado en [Strands Agents SDK](https://strandsagents.com/) que usa el catálogo de hardware, guías de generación y el prompt Professor Synapse para crear proyectos firmware IoT/embebido.
+Agente inteligente basado en [Strands Agents SDK](https://strandsagents.com/)
+que usa el catálogo de hardware, guías de generación y el prompt Professor
+Synapse para crear proyectos firmware IoT/embebido.
 
 ## Requisitos
 
@@ -10,7 +12,8 @@ Agente inteligente basado en [Strands Agents SDK](https://strandsagents.com/) qu
 pip install strands-agents strands-agents-tools python-frontmatter
 ```
 
-### Credenciales (según el modelo)
+
+### Credenciales (según el proveedor)
 
 **Amazon Bedrock (default):**
 ```bash
@@ -50,7 +53,7 @@ python -m agent.firmware_agent
 python -m agent.firmware_agent "Crea un sensor de temperatura IoT con ESP32 y DHT22"
 
 # Documentar un proyecto existente
-python -m agent.firmware_agent "Analiza ./mi-proyecto/ y genera toda la documentación .ai/"
+python -m agent.firmware_agent "Analiza ./mi-proyecto/ y genera documentación .ai/"
 
 # Ver catálogo
 python -m agent.firmware_agent "/catalog"
@@ -65,25 +68,26 @@ agent = create_firmware_agent()
 result = agent("Crea un proyecto de cierre centralizado con ESP32 y BLE")
 ```
 
+
 ## Arquitectura
 
 ```
 agent/
 ├── __init__.py              # Package init + versión
-├── firmware_agent.py        # Agente principal (entry point)
+├── firmware_agent.py        # Agente principal (punto de entrada)
 ├── README.md                # Este archivo
 └── tools/
-    ├── __init__.py          # Exporta ALL_TOOLS
+    ├── __init__.py          # Exporta ALL_TOOLS (11 herramientas)
     ├── catalog_tools.py     # load_board, load_peripheral, list_catalog
     ├── guide_tools.py       # read_guide, list_guides
     ├── file_tools.py        # write_file, read_project_file, list_project_files
     └── analysis_tools.py    # analyze_code, detect_board, detect_peripherals
 ```
 
-## Tools disponibles
+## Herramientas disponibles
 
-| Tool | Descripción | Módulo |
-|------|-------------|--------|
+| Herramienta | Descripción | Módulo |
+|-------------|-------------|--------|
 | `load_board(board_id)` | Carga ficha completa de una placa del catálogo | catalog_tools |
 | `load_peripheral(peripheral_id)` | Carga ficha completa de un periférico | catalog_tools |
 | `list_catalog()` | Lista todo el hardware disponible | catalog_tools |
@@ -92,14 +96,14 @@ agent/
 | `write_file(path, content)` | Crea un archivo en el proyecto de salida | file_tools |
 | `read_project_file(path)` | Lee un archivo existente | file_tools |
 | `list_project_files(directory)` | Lista archivos de un directorio | file_tools |
-| `analyze_code(file_path)` | Analiza código fuente (detecta anti-patrones) | analysis_tools |
+| `analyze_code(file_path)` | Analiza código (detecta anti-patrones) | analysis_tools |
 | `detect_board(directory)` | Detecta la placa via platformio.ini | analysis_tools |
 | `detect_peripherals(directory)` | Detecta periféricos por librerías/includes | analysis_tools |
 
 ## Cómo funciona
 
-1. El agente recibe una instrucción del usuario (ej: "Crea un proyecto IoT con ESP32 y DHT22")
-2. Lee el system prompt (Professor Synapse / synapse-v3.md)
+1. El agente recibe una instrucción (ej: "Crea un proyecto IoT con ESP32 y DHT22")
+2. Carga el system prompt (Professor Synapse / synapse-v3.md)
 3. Decide autónomamente qué herramientas usar:
    - Consulta el catálogo para verificar hardware
    - Lee las guías para saber cómo generar cada archivo
@@ -121,7 +125,7 @@ agent/
 
 ## Próximos pasos (Nivel 2 y 3)
 
-- **Nivel 2**: `docs_agent.py` — Agente especializado en documentar código existente
+- **Nivel 2**: `docs_agent.py` — Agente para documentar código existente
 - **Nivel 3**: Multi-agente con orquestador (hw_agent + code_agent + docs_agent)
 
 Ver `docs/next-strands-agent.md` para el plan completo.

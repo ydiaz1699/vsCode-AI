@@ -1,5 +1,5 @@
 """
-Tools para operaciones de archivo en el proyecto generado.
+Herramientas para operaciones de archivo en el proyecto generado.
 
 Permiten al agente crear archivos de salida, leer archivos existentes
 y explorar la estructura de un directorio de proyecto.
@@ -70,10 +70,10 @@ def read_project_file(path: str) -> str:
 
     try:
         content = file_path.read_text(encoding="utf-8")
-        lines = content.count("\n") + 1
+        lineas = content.count("\n") + 1
         size = len(content.encode("utf-8"))
         return (
-            f"=== {path} ({lines} líneas, {size} bytes) ===\n\n"
+            f"=== {path} ({lineas} líneas, {size} bytes) ===\n\n"
             f"{content}"
         )
     except UnicodeDecodeError:
@@ -105,26 +105,25 @@ def list_project_files(directory: str = ".") -> str:
     if not dir_path.is_dir():
         return f"ERROR: '{directory}' no es un directorio."
 
-    # Recopilar archivos recursivamente (excluir .git y __pycache__)
-    excluded = {".git", "__pycache__", "node_modules", ".pio", ".vscode"}
-    files = []
-    dirs_found = set()
+    # Recopilar archivos (excluir carpetas irrelevantes)
+    excluidos = {".git", "__pycache__", "node_modules", ".pio", ".vscode"}
+    archivos = []
+    dirs_encontrados = set()
 
     for f in sorted(dir_path.rglob("*")):
-        # Saltar directorios excluidos
-        if any(part in excluded for part in f.parts):
+        if any(parte in excluidos for parte in f.parts):
             continue
         if f.is_file():
             rel = f.relative_to(dir_path)
             size = f.stat().st_size
-            files.append(f"  {rel} ({size} bytes)")
-            dirs_found.add(str(f.parent.relative_to(dir_path)))
+            archivos.append(f"  {rel} ({size} bytes)")
+            dirs_encontrados.add(str(f.parent.relative_to(dir_path)))
 
-    if not files:
+    if not archivos:
         return f"Directorio '{directory}' está vacío."
 
     return (
         f"=== Archivos en '{directory}' ===\n"
-        f"Total: {len(files)} archivos en {len(dirs_found)} directorios\n\n"
-        + "\n".join(files)
+        f"Total: {len(archivos)} archivos en {len(dirs_encontrados)} directorios\n\n"
+        + "\n".join(archivos)
     )

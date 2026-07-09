@@ -1,5 +1,5 @@
 """
-Tools para acceder al catálogo de hardware (boards y peripherals).
+Herramientas para acceder al catálogo de hardware (placas y periféricos).
 
 El catálogo vive en catalog/boards/*.md y catalog/peripherals/*.md
 Cada archivo usa frontmatter YAML con metadatos estructurados + contenido Markdown.
@@ -9,7 +9,7 @@ from pathlib import Path
 from strands.tools import tool
 import frontmatter
 
-# Base del proyecto (raíz de vsCode-AI)
+# Raíz del proyecto vsCode-AI
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
@@ -30,13 +30,13 @@ def load_board(board_id: str) -> str:
     board_file = boards_dir / f"{board_id}.md"
 
     if not board_file.exists():
-        available = sorted(
+        disponibles = sorted(
             f.stem for f in boards_dir.glob("*.md")
             if not f.name.startswith("_")
         )
         return (
             f"ERROR: Placa '{board_id}' no encontrada en el catálogo.\n"
-            f"Placas disponibles: {', '.join(available)}\n"
+            f"Placas disponibles: {', '.join(disponibles)}\n"
             f"Usa uno de estos IDs exactos."
         )
 
@@ -67,13 +67,13 @@ def load_peripheral(peripheral_id: str) -> str:
     periph_file = periphs_dir / f"{peripheral_id}.md"
 
     if not periph_file.exists():
-        available = sorted(
+        disponibles = sorted(
             f.stem for f in periphs_dir.glob("*.md")
             if not f.name.startswith("_")
         )
         return (
             f"ERROR: Periférico '{peripheral_id}' no encontrado en el catálogo.\n"
-            f"Periféricos disponibles: {', '.join(available)}\n"
+            f"Periféricos disponibles: {', '.join(disponibles)}\n"
             f"Usa uno de estos IDs exactos."
         )
 
@@ -89,7 +89,7 @@ def load_peripheral(peripheral_id: str) -> str:
 
 @tool
 def list_catalog() -> str:
-    """Lista todas las placas y periféricos disponibles en el catálogo de hardware.
+    """Lista todas las placas y periféricos disponibles en el catálogo.
 
     Retorna un resumen con ID, nombre y características principales de cada
     elemento. Úsalo para saber qué hardware está documentado antes de
@@ -98,7 +98,7 @@ def list_catalog() -> str:
     boards_dir = BASE_DIR / "catalog" / "boards"
     periphs_dir = BASE_DIR / "catalog" / "peripherals"
 
-    # Listar boards con info básica
+    # Listar placas con info básica
     boards_info = []
     for f in sorted(boards_dir.glob("*.md")):
         if f.name.startswith("_"):
@@ -108,11 +108,11 @@ def list_catalog() -> str:
             meta = post.metadata
             wifi = "WiFi" if meta.get("wifi") else ""
             bt = f"BT{meta.get('bluetooth_version', '')}" if meta.get("bluetooth") else ""
-            connectivity = " + ".join(filter(None, [wifi, bt])) or "Sin conectividad"
+            conectividad = " + ".join(filter(None, [wifi, bt])) or "Sin conectividad"
             boards_info.append(
                 f"  - {meta.get('id', f.stem)}: {meta.get('name', '?')} "
                 f"({meta.get('mcu', '?')}, {meta.get('ram_kb', '?')}KB RAM, "
-                f"{connectivity})"
+                f"{conectividad})"
             )
         except Exception:
             boards_info.append(f"  - {f.stem}: (error al leer)")
@@ -128,7 +128,7 @@ def list_catalog() -> str:
             periphs_info.append(
                 f"  - {meta.get('id', f.stem)}: {meta.get('name', '?')} "
                 f"({meta.get('protocol', '?')}, {meta.get('voltage_min', '?')}-"
-                f"{meta.get('voltage_max', '?')}V, cat: {meta.get('category', '?')})"
+                f"{meta.get('voltage_max', '?')}V, categoría: {meta.get('category', '?')})"
             )
         except Exception:
             periphs_info.append(f"  - {f.stem}: (error al leer)")

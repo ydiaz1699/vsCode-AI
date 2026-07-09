@@ -1,5 +1,5 @@
 """
-Tools para analizar código fuente existente.
+Herramientas para analizar código fuente existente.
 
 Permiten al agente inspeccionar proyectos PlatformIO/Arduino existentes
 para detectar placa, periféricos y generar documentación adaptada.
@@ -10,8 +10,9 @@ from pathlib import Path
 from strands.tools import tool
 import frontmatter
 
-# Base del proyecto vsCode-AI (para acceder al catálogo)
+# Raíz del proyecto vsCode-AI (para acceder al catálogo)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
 
 
 @tool
@@ -20,7 +21,7 @@ def analyze_code(file_path: str) -> str:
     junto con observaciones sobre patrones detectados.
 
     Detecta automáticamente: includes, defines, funciones principales,
-    uso de delay(), credenciales hardcodeadas, y patrones comunes.
+    uso de delay(), credenciales hardcodeadas, y GPIOs restringidos.
 
     Args:
         file_path: Ruta al archivo de código fuente.
@@ -40,7 +41,7 @@ def analyze_code(file_path: str) -> str:
         return f"ERROR: '{file_path}' no es un archivo de texto."
 
     lines = content.splitlines()
-    observations = []
+    observaciones = []
 
     # Detectar patrones problemáticos
     for i, line in enumerate(lines, 1):
@@ -48,36 +49,54 @@ def analyze_code(file_path: str) -> str:
 
         # delay() en loop (anti-patrón)
         if "delay(" in stripped and not stripped.startswith("//"):
-            observations.append(f"  ⚠️  L{i}: delay() detectado — considerar millis()")
+            observaciones.append(
+                f"  ⚠️  L{i}: delay() detectado — considerar millis()"
+            )
 
         # Credenciales hardcodeadas
-        if re.search(r'(ssid|password|api_key|token)\s*=\s*"[^"]+', stripped, re.IGNORECASE):
-            observations.append(f"  ⚠️  L{i}: Posible credencial hardcodeada")
+        if re.search(
+            r'(ssid|password|api_key|token)\s*=\s*"[^"]+',
+            stripped, re.IGNORECASE
+        ):
+            observaciones.append(
+                f"  ⚠️  L{i}: Posible credencial hardcodeada"
+            )
 
         # GPIO restringidos ESP32
-        gpio_match = re.findall(r'GPIO_NUM_(\d+)|#define\s+\w+PIN\s+(\d+)', stripped)
+        gpio_match = re.findall(
+            r'GPIO_NUM_(\d+)|#define\s+\w+PIN\s+(\d+)', stripped
+        )
         for match in gpio_match:
             pin = int(match[0] or match[1])
             if pin in (6, 7, 8, 9, 10, 11):
-                observations.append(f"  ❌ L{i}: GPIO{pin} es restringido (flash SPI)")
+                observaciones.append(
+                    f"  ❌ L{i}: GPIO{pin} es restringido (flash SPI)"
+                )
 
     # Detectar includes
     includes = [l.strip() for l in lines if l.strip().startswith("#include")]
 
     # Detectar funciones
-    func_pattern = re.compile(r'^(?:void|int|float|bool|String|char)\s+(\w+)\s*\(')
-    functions = [func_pattern.match(l.strip()).group(1) for l in lines if func_pattern.match(l.strip())]
+    func_pattern = re.compile(
+        r'^(?:void|int|float|bool|String|char)\s+(\w+)\s*\('
+    )
+    funciones = [
+        func_pattern.match(l.strip()).group(1)
+        for l in lines if func_pattern.match(l.strip())
+    ]
 
-    obs_str = "\n".join(observations) if observations else "  ✅ Sin problemas detectados"
+    obs_str = "\n".join(observaciones) if observaciones else "  ✅ Sin problemas detectados"
 
     return (
         f"=== ANÁLISIS: {file_path} ({len(lines)} líneas) ===\n\n"
         f"Includes ({len(includes)}):\n"
         + "\n".join(f"  {inc}" for inc in includes[:20])
-        + f"\n\nFunciones detectadas: {', '.join(functions) if functions else '(ninguna)'}\n\n"
-        f"Observaciones:\n{obs_str}\n\n"
-        f"--- Código completo ---\n{content}"
+        + f"\n\nFunciones detectadas: "
+        + f"{', '.join(funciones) if funciones else '(ninguna)'}\n\n"
+        + f"Observaciones:\n{obs_str}\n\n"
+        + f"--- Código completo ---\n{content}"
     )
+
 
 
 @tool
@@ -127,7 +146,6 @@ def detect_board(directory: str = ".") -> str:
     catalog_id = BOARD_MAP.get(pio_board)
 
     if catalog_id:
-        # Intentar cargar del catálogo
         board_file = BASE_DIR / "catalog" / "boards" / f"{catalog_id}.md"
         if board_file.exists():
             post = frontmatter.load(str(board_file))
@@ -144,7 +162,7 @@ def detect_board(directory: str = ".") -> str:
                 f"RAM: {meta.get('ram_kb', '?')} KB\n"
                 f"Flash: {meta.get('flash_mb', '?')} MB\n"
                 f"GPIOs restringidos: {meta.get('gpio_restricted', [])}\n\n"
-                f"Usa load_board('{catalog_id}') para ver la ficha completa."
+                f"Usa load_board('{catalog_id}') para la ficha completa."
             )
 
     return (
@@ -153,6 +171,7 @@ def detect_board(directory: str = ".") -> str:
         f"Catálogo ID intentado: {catalog_id or '(sin mapeo)'}\n"
         f"Considera agregar una ficha nueva al catálogo."
     )
+
 
 
 @tool
@@ -172,7 +191,7 @@ def detect_peripherals(directory: str = ".") -> str:
         return f"ERROR: Directorio no encontrado: {directory}"
 
     # Patrones de detección: library/include → peripheral_id
-    DETECTION_PATTERNS = {
+    PATRONES_DETECCION = {
         "DHT.h": "dht22",
         "DHT sensor library": "dht22",
         "NewPing.h": "hc-sr04",
@@ -191,55 +210,57 @@ def detect_peripherals(directory: str = ".") -> str:
         "Adafruit_MPU6050": "mpu6050",
     }
 
-    # Buscar en archivos .cpp, .h, .ino, y platformio.ini
-    extensions = {".cpp", ".h", ".ino", ".c", ".hpp"}
-    files_to_search = list(dir_path.rglob("platformio.ini"))
-    for ext in extensions:
-        files_to_search.extend(dir_path.rglob(f"*{ext}"))
+    # Buscar en archivos de código y platformio.ini
+    extensiones = {".cpp", ".h", ".ino", ".c", ".hpp"}
+    archivos_buscar = list(dir_path.rglob("platformio.ini"))
+    for ext in extensiones:
+        archivos_buscar.extend(dir_path.rglob(f"*{ext}"))
 
-    detected = {}  # peripheral_id → [evidence]
+    detectados = {}  # peripheral_id → [evidencia]
 
-    for f in files_to_search:
+    for f in archivos_buscar:
         try:
             content = f.read_text(encoding="utf-8")
         except (UnicodeDecodeError, Exception):
             continue
 
-        for pattern, periph_id in DETECTION_PATTERNS.items():
-            if pattern in content:
-                if periph_id not in detected:
-                    detected[periph_id] = []
-                rel_path = f.relative_to(dir_path) if f.is_relative_to(dir_path) else f
-                detected[periph_id].append(f"{rel_path} ('{pattern}')")
+        for patron, periph_id in PATRONES_DETECCION.items():
+            if patron in content:
+                if periph_id not in detectados:
+                    detectados[periph_id] = []
+                rel_path = (
+                    f.relative_to(dir_path)
+                    if f.is_relative_to(dir_path) else f
+                )
+                detectados[periph_id].append(f"{rel_path} ('{patron}')")
 
-    if not detected:
+    if not detectados:
         return (
             f"No se detectaron periféricos del catálogo en '{directory}'.\n"
-            f"Archivos analizados: {len(files_to_search)}\n"
+            f"Archivos analizados: {len(archivos_buscar)}\n"
             f"Puede que use periféricos no catalogados."
         )
 
     # Formatear resultados
-    results = []
-    for periph_id, evidence in sorted(detected.items()):
-        # Intentar obtener nombre del catálogo
+    resultados = []
+    for periph_id, evidencia in sorted(detectados.items()):
         periph_file = BASE_DIR / "catalog" / "peripherals" / f"{periph_id}.md"
-        name = periph_id
+        nombre = periph_id
         if periph_file.exists():
             try:
                 post = frontmatter.load(str(periph_file))
-                name = post.metadata.get("name", periph_id)
+                nombre = post.metadata.get("name", periph_id)
             except Exception:
                 pass
 
-        results.append(
-            f"  ✅ {periph_id} ({name})\n"
-            f"     Evidencia: {'; '.join(evidence[:3])}"
+        resultados.append(
+            f"  ✅ {periph_id} ({nombre})\n"
+            f"     Evidencia: {'; '.join(evidencia[:3])}"
         )
 
     return (
         f"=== PERIFÉRICOS DETECTADOS en '{directory}' ===\n\n"
-        f"Encontrados: {len(detected)} periférico(s) del catálogo\n\n"
-        + "\n".join(results)
-        + f"\n\nUsa load_peripheral(id) para ver la ficha completa de cada uno."
+        f"Encontrados: {len(detectados)} periférico(s) del catálogo\n\n"
+        + "\n".join(resultados)
+        + f"\n\nUsa load_peripheral(id) para la ficha completa de cada uno."
     )

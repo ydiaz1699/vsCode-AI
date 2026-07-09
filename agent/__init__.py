@@ -1,5 +1,5 @@
 """
-vsCode-AI Strands Agent - Nivel 1: Firmware Agent
+vsCode-AI Agente Strands — Nivel 1: Firmware Agent
 
 Agente inteligente basado en Strands Agents SDK que usa el catálogo de hardware,
 guías de generación y prompts del proyecto para crear firmware IoT/embebido.
