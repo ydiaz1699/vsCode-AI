@@ -8,6 +8,7 @@ Este directorio contiene los mega-prompts principales para trabajar con IA en pr
 |--------|------------|-----------|
 | [synapse-v3.md](synapse-v3.md) | **Crear proyecto nuevo** o **trabajar con código existente** en tiempo real | Código + documentación generados interactivamente |
 | [generator-context.md](generator-context.md) | **Documentar proyecto existente** que ya tiene código pero le falta documentación .ai/ | 18 archivos de documentación generados |
+| [deep-analysis.md](deep-analysis.md) | **Debugging profundo** — encontrar causa raíz de bugs complejos | Diagnóstico con cadena causal, tests incrementales, fix verificado |
 
 ## Diferencias Clave
 
@@ -25,6 +26,15 @@ Este directorio contiene los mega-prompts principales para trabajar con IA en pr
 - Trabaja en 2 fases: análisis → generación
 - Ideal para: proyectos legacy, organizar proyectos existentes, onboarding
 
+### deep-analysis.md (Análisis Forense de Bugs)
+- Diseñado para **debugging exhaustivo** de problemas complejos
+- Metodología de 6 fases: mapeo → source → simulación → diferencial → tests → diagnóstico
+- Lee el source code de librerías externas para entender comportamiento real
+- Calcula tiempos exactos del sistema con las constantes reales
+- Diseña tests incrementales que aíslan una variable a la vez
+- Reconoce cuándo parar (problema de hardware vs software)
+- Ideal para: bugs de timing, protocolos que no funcionan, interacción HW/SW, librerías con comportamiento inesperado
+
 ## Uso Típico
 
 ```
@@ -36,6 +46,11 @@ Este directorio contiene los mega-prompts principales para trabajar con IA en pr
 │       │                                                         │
 │       ▼                                                         │
 │  ¿Tiene código pero no docs?  ──YES──▶  Usar generator-context │
+│       │                                                         │
+│       NO                                                        │
+│       │                                                         │
+│       ▼                                                         │
+│  ¿Bug complejo / no funciona?  ──YES──▶  Usar deep-analysis   │
 │       │                                                         │
 │       NO                                                        │
 │       │                                                         │

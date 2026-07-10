@@ -21,6 +21,7 @@ Instrucciones para que la IA genere cada archivo de documentación del proyecto.
 | [gen-changelog.md](gen-changelog.md) | `.ai/CHANGELOG.md` | Siempre (Keep a Changelog) |
 | [gen-decisions.md](gen-decisions.md) | `.ai/DECISIONS.md` | Siempre (ADR format, mín. 2) |
 | [gen-testing.md](gen-testing.md) | `.ai/TESTING.md` | Solo si existen tests |
+| [gen-debugging.md](gen-debugging.md) | `.ai/DEBUGGING.md` | Solo si bugs resueltos con análisis profundo |
 | [gen-roadmap.md](gen-roadmap.md) | `.ai/ROADMAP.md` | Siempre (obligatorio) |
 
 ### Archivos docs/
