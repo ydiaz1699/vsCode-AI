@@ -23,6 +23,7 @@ Instrucciones para que la IA genere cada archivo de documentación del proyecto.
 | [gen-testing.md](gen-testing.md) | `.ai/TESTING.md` | Solo si existen tests |
 | [gen-debugging.md](gen-debugging.md) | `.ai/DEBUGGING.md` | Solo si bugs resueltos con análisis profundo |
 | [gen-roadmap.md](gen-roadmap.md) | `.ai/ROADMAP.md` | Siempre (obligatorio) |
+| [gen-analisis.md](gen-analisis.md) | `analisis_<proyecto>.md` | **Siempre PRIMERO** (fuente de verdad) |
 
 ### Archivos docs/
 
